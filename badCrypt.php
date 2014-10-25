@@ -12,7 +12,7 @@
  * @link     https://github.com/dopeCode/dcrypt
  */
 
-namespace dopeCode\dcrypt;
+# namespace dopeCode\dcrypt;
 
 /**
  * Symmetric AES encryption implementation wrapper functions.
@@ -29,7 +29,7 @@ namespace dopeCode\dcrypt;
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
  * @link     https://github.com/dopeCode/dcrypt
  */
-class Aes
+class badCrypt
 {
 
     /**
