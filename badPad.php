@@ -11,7 +11,6 @@
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
  * @link     https://github.com/dopeCode/dcrypt
  */
-
 # namespace dopeCode\dcrypt;
 
 /**
@@ -101,7 +100,7 @@ class Pkcs7
 
         // Do a padding check...
         $padverify = substr($input, -$padsize);
-        if ($padverify !== str_repeat($padchar, $padsize)) {
+        if (strlen(str_replace($padchar, '', $padverify)) > 0) {
             throw new \Exception('Invalid padding.');
         }
 

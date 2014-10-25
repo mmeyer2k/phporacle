@@ -76,9 +76,15 @@ class badCrypt
         $cyphertext = substr($cyphertext, 64);
 
         // If chksum could not be verified return false.
-        if (self::_chksumcreate($cyphertext, $iv, $key) !== $chksum) {
-            return false;
-        }
+        /*
+         * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         * Checksum validation has been disabled...
+         * DO NOT USE THIS LIBRARY EVER
+         * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         */
+        # if (self::_chksumcreate($cyphertext, $iv, $key) !== $chksum) {
+        #     return false;
+        # }
 
         // Decrypt the cyphertext data.
         $plaintext = mcrypt_decrypt(
@@ -110,7 +116,9 @@ class badCrypt
         $key = self::_key($key);
 
         // Generate an strong random IV.
-        $iv = openssl_random_pseudo_bytes(32);
+        // Neuter IVs
+        # $iv = openssl_random_pseudo_bytes(32);
+        $iv = str_repeat('A', 32);
 
         // Pad the input string
         $padded = Pkcs7::pad($plaintext);
