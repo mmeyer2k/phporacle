@@ -11,7 +11,6 @@
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
  * @link     https://github.com/dopeCode/dcrypt
  */
-
 # namespace dopeCode\dcrypt;
 
 /**
@@ -85,10 +84,9 @@ class badCrypt
         # if (self::_chksumcreate($cyphertext, $iv, $key) !== $chksum) {
         #     return false;
         # }
-
         // Decrypt the cyphertext data.
         $plaintext = mcrypt_decrypt(
-            MCRYPT_RIJNDAEL_256, $key, $cyphertext, MCRYPT_MODE_CBC, $iv
+                MCRYPT_RIJNDAEL_256, $key, $cyphertext, MCRYPT_MODE_CBC, $iv
         );
 
         /*
@@ -118,14 +116,14 @@ class badCrypt
         // Generate an strong random IV.
         // Neuter IVs
         # $iv = openssl_random_pseudo_bytes(32);
-        $iv = str_repeat('A', 32);
+        $iv = str_repeat("\x00", 32);
 
         // Pad the input string
         $padded = Pkcs7::pad($plaintext);
 
         // Encrypt the plaintext
         $cyphertext = mcrypt_encrypt(
-            MCRYPT_RIJNDAEL_256, $key, $padded, MCRYPT_MODE_CBC, $iv
+                MCRYPT_RIJNDAEL_256, $key, $padded, MCRYPT_MODE_CBC, $iv
         );
 
         // Create a checksum of the cypher text
