@@ -1,70 +1,58 @@
 <?php
 
+header('Content-Type: text/plain');
+
 // Include bad encryption libraries
 require 'badCrypt.php';
 require 'badPad.php';
 require 'badHash.php';
 
-function _out($msg, $eol = true)
-{
-    echo $msg;
-    if ($eol) {
-        echo PHP_EOL;
-    }
-}
-
-function _blocks($data)
-{
-    $data = str_split($data);
-    $blocks = array_chunk($data, 32);
-    foreach ($blocks as $b) {
-        echo bin2hex(implode($b)) . PHP_EOL;
-    }
-}
-
 // Create a key to use for encryption operations...
-$key = str_repeat('0', 32);
+$key = str_repeat('A', 32);
 
 // Create the secret that we want to crack...
-$secret = 'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHAAAABBBBCCCCDDDD';
-
-_out('Secret (plaintext): ' . $secret);
+$secret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbb';
 
 $encrypted = badCrypt::encrypt($secret, $key);
 
-_out('Secret: (encrypted as hex): ' . PHP_EOL . _blocks($encrypted));
+$blocks = str_split($encrypted, 32);
+$count = count($blocks);
+$head = $blocks[0] . $blocks[1];
+$padbytes = null;
+for ($nblock = $count - 1; $nblock > 2; $nblock--) {
+    $badblock = str_repeat("\xFF", 32);
+    for ($nbyte = 31; $nbyte >= 0; $nbyte--) {
+        for ($tbyte = 0; $tbyte < 256; $tbyte++) {
+            $badblock[$nbyte] = chr($tbyte);
 
-_out('# of blocks in cypher text: ' . (strlen($encrypted) / 32));
+            echo "blk# $nblock | byte# $nbyte | byteval $tbyte : ";
 
-for ($x = 1; $x <= 32; $x++) {
-    for ($i = 0; $i <= 255; $i++) {
+            try {
+                badCrypt::decrypt($head . $badblock . $blocks[$nblock], $key);
+            } catch (Exception $ex) {
+                echo 'BAD ' . bin2hex($badblock) . PHP_EOL;
+                continue;
+            }
 
-        $nth = 32 + $x;
+            $pos = 32 - $nbyte;
 
-        $test = $encrypted;
+            $derp = ord($blocks[$nblock - 1][$nbyte]);
+            $boop = $pos ^ $derp ^ $tbyte;
 
-        $test[strlen($encrypted) - $nth] = chr($i);
+            if ($padbytes === null) {
+                $padbytes = $boop;
+            }
 
-        $orig_byte = bin2hex($encrypted[strlen($encrypted) - $nth]);
+            echo "GOOD [stolen: $boop !]" . bin2hex($badblock) . PHP_EOL;
 
-        #_out("orig: $orig_byte  new: " . bin2hex(chr($i)));
+            // Fix char
+            // count processed bytes and adjust historic bytes
+            for ($fixpos = 31; $fixpos >= $nbyte; $fixpos--) {
+                $new = ($pos + 1) ^ $padbytes ^ ord($blocks[$nblock - 1][$fixpos]);
+                $badblock[$fixpos] = chr($new);
+            }
 
-        if ($orig_byte == bin2hex(chr($i))) {
-            continue;
+            break;
         }
-
-        $bx = str_pad($x, 2, '0', STR_PAD_LEFT);
-        $out = "byte #$bx:" . bin2hex(chr($i)) . ' : ';
-
-        try {
-            // Check padding...
-            $decrypted = badCrypt::decrypt($test, $key);
-            $out .= bin2hex($decrypted);
-        } catch (Exception $ex) {
-            continue;
-        }
-        _out($out);
     }
 }
-
-#_out('Secret: (decrypted as hex): ' . $decrypted);
