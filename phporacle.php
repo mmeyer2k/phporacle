@@ -1,8 +1,14 @@
 <?php
+/*
+ * This is a PHP POC of a padding oracle attack. It works with local exceptions
+ * instead of interacting with a server for the sake of simplicity.
+ * 
+ * @link https://blog.skullsecurity.org/2013/a-padding-oracle-example/comment-page-1#comment-39128
+ */
 
-header('Content-Type: text/plain');
-
-// Include bad encryption libraries
+/*
+ * Include a few neutered encryption libraries
+ */
 require 'badCrypt.php';
 require 'badPad.php';
 require 'badHash.php';
@@ -24,27 +30,22 @@ for ($nblock = $count - 1; $nblock > 2; $nblock--) {
     for ($nbyte = 31; $nbyte >= 0; $nbyte--) {
         for ($tbyte = 0; $tbyte < 256; $tbyte++) {
             $badblock[$nbyte] = chr($tbyte);
-
-            echo "blk# $nblock | byte# $nbyte | byteval $tbyte : ";
-
+            
             try {
                 $d = badCrypt::decrypt($head . $badblock . $blocks[$nblock], $key);
             } catch (Exception $ex) {
-                echo 'BAD ' . bin2hex($badblock) . PHP_EOL;
                 continue;
             }
 
             $pos = 32 - $nbyte;
 
             $derp = ord($blocks[$nblock - 1][$nbyte]);
-            $boop = $pos ^ $derp ^ $tbyte;
+            $stolen = $pos ^ $derp ^ $tbyte;
             
-            $secretblock[$nbyte] = $boop;
+            $secretblock[$nbyte] = $stolen;
 
-            echo "GOOD [stolen: $boop !]" . bin2hex($badblock) . PHP_EOL;
-
-            // Fix char
-            // count processed bytes and adjust historic bytes
+            // Loop through the previous bytes of the bad block to fix each
+            // byte for the next round.
             for ($fixpos = 31; $fixpos >= $nbyte; $fixpos--) {
                 $new = ($pos + 1) ^ $secretblock[$fixpos] ^ ord($blocks[$nblock - 1][$fixpos]);
                 $badblock[$fixpos] = chr($new);
@@ -53,4 +54,7 @@ for ($nblock = $count - 1; $nblock > 2; $nblock--) {
             break;
         }
     }
+    
+    echo bin2hex(implode($secretblock));
+    
 }
