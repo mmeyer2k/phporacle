@@ -11,16 +11,16 @@ require 'badHash.php';
 $key = str_repeat('A', 32);
 
 // Create the secret that we want to crack...
-$secret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbb';
+$secret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbcc';
 
 $encrypted = badCrypt::encrypt($secret, $key);
 
 $blocks = str_split($encrypted, 32);
 $count = count($blocks);
 $head = $blocks[0] . $blocks[1];
-$padbytes = null;
 for ($nblock = $count - 1; $nblock > 2; $nblock--) {
     $badblock = str_repeat("\xFF", 32);
+    $secretblock = array();
     for ($nbyte = 31; $nbyte >= 0; $nbyte--) {
         for ($tbyte = 0; $tbyte < 256; $tbyte++) {
             $badblock[$nbyte] = chr($tbyte);
@@ -28,7 +28,7 @@ for ($nblock = $count - 1; $nblock > 2; $nblock--) {
             echo "blk# $nblock | byte# $nbyte | byteval $tbyte : ";
 
             try {
-                badCrypt::decrypt($head . $badblock . $blocks[$nblock], $key);
+                $d = badCrypt::decrypt($head . $badblock . $blocks[$nblock], $key);
             } catch (Exception $ex) {
                 echo 'BAD ' . bin2hex($badblock) . PHP_EOL;
                 continue;
@@ -38,17 +38,15 @@ for ($nblock = $count - 1; $nblock > 2; $nblock--) {
 
             $derp = ord($blocks[$nblock - 1][$nbyte]);
             $boop = $pos ^ $derp ^ $tbyte;
-
-            if ($padbytes === null) {
-                $padbytes = $boop;
-            }
+            
+            $secretblock[$nbyte] = $boop;
 
             echo "GOOD [stolen: $boop !]" . bin2hex($badblock) . PHP_EOL;
 
             // Fix char
             // count processed bytes and adjust historic bytes
             for ($fixpos = 31; $fixpos >= $nbyte; $fixpos--) {
-                $new = ($pos + 1) ^ $padbytes ^ ord($blocks[$nblock - 1][$fixpos]);
+                $new = ($pos + 1) ^ $secretblock[$fixpos] ^ ord($blocks[$nblock - 1][$fixpos]);
                 $badblock[$fixpos] = chr($new);
             }
 
