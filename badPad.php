@@ -1,7 +1,7 @@
 <?php
 
 /**
- * badPad.php - A very bad padding library. Modified from dopeCode/dcrypt.
+ * badPad.php - A very bad padding library. Modified from dopecode/dcrypt.
  * 
  * PHP version 5
  * 

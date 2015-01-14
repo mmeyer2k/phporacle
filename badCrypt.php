@@ -9,7 +9,7 @@
  * @package  Dcrypt
  * @author   Michael Meyer (mmeyer2k) <m.meyer2k@gmail.com>
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
- * @link     https://github.com/dopeCode/dcrypt
+ * @link     https://github.com/dopecode/dcrypt
  */
 # namespace dopeCode\dcrypt;
 
@@ -26,7 +26,7 @@
  * @package  Dcrypt
  * @author   Michael Meyer (mmeyer2k) <m.meyer2k@gmail.com>
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
- * @link     https://github.com/dopeCode/dcrypt
+ * @link     https://github.com/dopecode/dcrypt
  */
 class badCrypt
 {

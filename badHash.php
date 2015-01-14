@@ -1,7 +1,7 @@
 <?php
 
 /**
- * badHash.php - A very bad hashing library. Modified from dopeCode/dcrypt.
+ * badHash.php - A very bad hashing library. Modified from dopecode/dcrypt.
  * 
  * PHP version 5
  * 
@@ -9,10 +9,10 @@
  * @package  Dcrypt
  * @author   Michael Meyer (mmeyer2k) <m.meyer2k@gmail.com>
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
- * @link     https://github.com/dopeCode/dcrypt
+ * @link     https://github.com/dopecode/dcrypt
  */
 
-# namespace dopeCode\dcrypt;
+# namespace dopecode\dcrypt;
 
 /**
  * The hash class addresses some shortcomings in the password_hash function
@@ -30,7 +30,7 @@
  * @package  Dcrypt
  * @author   Michael Meyer (mmeyer2k) <m.meyer2k@gmail.com>
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
- * @link     https://github.com/dopeCode/dcrypt
+ * @link     https://github.com/dopecode/dcrypt
  */
 class Hash
 {
