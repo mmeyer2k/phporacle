@@ -85,10 +85,16 @@ for ($nblock = $count - 1; $nblock > 1; $nblock--) {
         }
     }
 
-    // Reverse the block
-    $secretblock = array_reverse($secretblock);
+    $secretblocks[$nblock] = $secretblock;
+}
 
-    foreach ($secretblock as $s) {
-        echo chr($s);
+
+// Reverse the secret blocks
+$secretblocks = array_reverse($secretblocks);
+
+// output bytes in the correct order
+foreach ($secretblocks as $block) {
+    for ($byte = 0; $byte < 32; $byte++) {
+        echo chr($block[$byte]);
     }
 }
