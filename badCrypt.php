@@ -86,7 +86,7 @@ class badCrypt
         # }
         // Decrypt the cyphertext data.
         $plaintext = mcrypt_decrypt(
-                MCRYPT_RIJNDAEL_256, $key, $cyphertext, MCRYPT_MODE_CBC, $iv
+            MCRYPT_RIJNDAEL_256, $key, $cyphertext, MCRYPT_MODE_CBC, $iv
         );
 
         /*
@@ -113,21 +113,21 @@ class badCrypt
          */
         $key = self::_key($key);
 
-        // Generate an strong random IV.
-        // Neuter IVs
+        // Generate an 32 byte IV. For readability, generate static IV
         # $iv = openssl_random_pseudo_bytes(32);
-        $iv = str_repeat("\x00", 32);
+        $iv = str_repeat('I', 32);
 
         // Pad the input string
         $padded = Pkcs7::pad($plaintext);
 
         // Encrypt the plaintext
         $cyphertext = mcrypt_encrypt(
-                MCRYPT_RIJNDAEL_256, $key, $padded, MCRYPT_MODE_CBC, $iv
+            MCRYPT_RIJNDAEL_256, $key, $padded, MCRYPT_MODE_CBC, $iv
         );
 
         // Create a checksum of the cypher text
-        $chksum = self::_chksumcreate($cyphertext, $iv, $key);
+        #$chksum = self::_chksumcreate($cyphertext, $iv, $key);
+        $chksum = str_repeat('C', 32);
 
         // Start output buffering to avoid concating strings
         ob_start();
